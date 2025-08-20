@@ -29,22 +29,16 @@ app.get('/', (req, res) => {
 const startServer = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('Successfully connected to MongoDB Atlas!');
+    console.log('Successfully connected to MongoDB!');
     
-    // This part is for traditional servers like Railway or Replit
-    // Vercel will ignore this and use the export statement below
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
 
   } catch (error) {
-    console.error('Connection error:', error);
-    process.exit(1); // Exit the process with an error code
+    console.error('Database connection error:', error);
+    process.exit(1);
   }
 };
 
-// Start the server
 startServer();
-
-// Export the app for serverless environments like Vercel
-module.exports = app;
