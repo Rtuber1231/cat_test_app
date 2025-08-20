@@ -3,48 +3,33 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+// IMPORTANT: Adjust the path to your route files
+// Since index.js is now in /api, we need to go up one level
+const testRoutes = require('../routes/testRoutes');
+const resultRoutes = require('../routes/resultRoutes');
+
 dotenv.config();
-
-// Import routes
-const testRoutes = require('./routes/testRoutes');
-const resultRoutes = require('./routes/resultRoutes');
-
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
+// Connect to MongoDB Atlas
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('Successfully connected to MongoDB Atlas!'))
+  .catch(err => console.error('Connection error:', err));
+
 // API Routes
 app.use('/api/test', testRoutes);
 app.use('/api/results', resultRoutes);
 
-// Test route
-app.get('/', (req, res) => {
+// Test route (this will be accessible at /api)
+app.get('/api', (req, res) => {
   res.send('Backend server is live!');
 });
 
-// Function to start the server
-const startServer = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('Successfully connected to MongoDB Atlas!');
-    
-    // This part is for traditional servers like Railway or Replit
-    // Vercel will ignore this and use the export statement below
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+// DO NOT INCLUDE app.listen(...)
 
-  } catch (error) {
-    console.error('Connection error:', error);
-    process.exit(1); // Exit the process with an error code
-  }
-};
-
-// Start the server
-startServer();
-
-// Export the app for serverless environments like Vercel
+// Export the app for Vercel
 module.exports = app;
