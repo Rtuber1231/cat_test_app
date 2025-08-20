@@ -2,17 +2,11 @@ const Result = require('../models/Result');
 
 exports.getResultById = async (req, res) => {
   try {
-    const result = await Result.findById(req.params.resultId)
-      .populate({
-        path: 'testId',
-        model: 'Test'
-      }); // This is key: it fetches the original test data too!
+    const result = await Result.findById(req.params.resultId).populate('testId');
 
-    if (!result) {
-      return res.status(404).json({ message: 'Result not found' });
-    }
+    if (!result) return res.status(404).json({ message: 'Result not found' });
     
-    // Rename 'testId' to 'test' for clarity on the frontend
+    // Rename 'testId' to 'test' for consistency with the frontend prototype
     const response = {
       ...result.toObject(),
       test: result.testId
