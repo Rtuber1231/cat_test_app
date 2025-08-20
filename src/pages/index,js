@@ -1,0 +1,36 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+// Import routes
+const testRoutes = require('./routes/testRoutes');
+const resultRoutes = require('./routes/resultRoutes');
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Connect to MongoDB Atlas
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('Successfully connected to MongoDB Atlas!'))
+  .catch(err => console.error('Connection error:', err));
+
+// API Routes
+app.use('/api/test', testRoutes);
+app.use('/api/results', resultRoutes);
+
+// Test route
+app.get('/', (req, res) => {
+  res.send('Backend server is live!');
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
